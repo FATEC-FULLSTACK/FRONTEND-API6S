@@ -1,8 +1,8 @@
 <template>
     <div>
       <!-- Input de cima -->
-      <input type="text" class="input-top" placeholder="Input acima" />
-
+      <input type="text" class="input-top" placeholder="type and scrambled it to make a type specimen book" />
+      
       <div class="container">
                 <!-- Blocos de texto com label + botão -->
                 <div class="text-boxes ">
@@ -28,7 +28,12 @@
       </div>
   
       <!-- Input de baixo -->
-      <input type="text" class="input-bottom" placeholder="Input abaixo" />
+      <input
+      type="text"
+      placeholder="Digite sua pergunta..."
+      class="w-full bg-[#2b2b2b] h-[65px] placeholder:text-sm p-6 text-sm text-white rounded-[15px] outline-none"
+      >
+      </input>
 
       </div>  
 
@@ -46,8 +51,8 @@
   }
   
   .input-top{
-    margin: 73px 0 0 867px;
-    width: 300px;
+    margin: 73px 0 0 807px;
+    width: 430px;
     height: 35px;
     border-radius: 20px;
     border: none;
