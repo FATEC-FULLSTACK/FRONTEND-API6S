@@ -37,7 +37,9 @@ export default {
           message: this.mensagem
         });
 
-        console.log("Resposta do servidor:", response.data.resposta);
+        console.log("Resposta do servidor:", response.data.data.responses.gemini);
+        console.log("Resposta do servidor:", response.data.data.responses.openai);
+
 
         // Aqui você pode emitir um evento para o componente pai exibir a resposta no chat
         this.$emit('novaMensagem', {
