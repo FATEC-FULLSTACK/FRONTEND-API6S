@@ -4,7 +4,7 @@
       <section class="flex flex-col items-center transition-opacity duration-1000" :class="{'opacity-0': !mostrarTexto}">
         <img src="../assets/logo/logo.svg" alt="IA Logo" width="30px" height="30px" />
         <div class="py-5">
-          <h2 class="text-3xl font-medium text-[var(--text-color)] text-center break-words"> Seja bem-vindo!</h2>
+          <h2 class="text-3xl font-medium text-white-600 text-center break-words">Hello, User</h2>
           <h1
             class="text-4xl mt-2 font-semibold gradient-bright-effect bg-gradient-to-r from-green-400 via-teal-500 to-sky-400 bg-clip-text text-transparent"
           >

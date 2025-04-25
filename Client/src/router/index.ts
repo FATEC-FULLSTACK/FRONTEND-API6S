@@ -13,6 +13,16 @@ const router = createRouter({
       path: '/avaliacao',
       name: 'criterios',
       component: Criterios,
+    },
+    {
+      path: '/Answer1',
+      name: 'answer1',
+      component: () => import ('@/views/Answer1.vue')
+    },
+    {
+      path: '/Answer2',
+      name: 'answer2',
+      component: () => import ('@/views/Answer2.vue')
     }
   ],
 })

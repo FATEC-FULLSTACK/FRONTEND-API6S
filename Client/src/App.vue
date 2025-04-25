@@ -3,3 +3,7 @@
 <template>
   <RouterView />
 </template>
+
+<script>
+import { defineComponent } from 'vue';
+</script>
