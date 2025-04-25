@@ -17,7 +17,6 @@
 </template>
 
 <script lang="ts">
-
 import axios from 'axios';
 
 export default {
@@ -31,23 +30,24 @@ export default {
     async enviarMensagem() {
       if (!this.mensagem.trim()) return;
 
+      const mensagemEnviada = this.mensagem; // Salva a mensagem antes de limpar
+      this.mensagem = ""; // Limpa o input imediatamente
+
       try {
         const response = await axios.post('http://localhost:8000/chat', {
-          user_id:"123",
-          message: this.mensagem
+          user_id: "123",
+          message: mensagemEnviada
         });
 
         console.log("Resposta do servidor:", response.data.data.responses.gemini);
         console.log("Resposta do servidor:", response.data.data.responses.openai);
 
-
-        // Aqui você pode emitir um evento para o componente pai exibir a resposta no chat
+        // Emitir o evento para a HomePage.vue com as respostas
         this.$emit('novaMensagem', {
-          texto: this.mensagem,
-          resposta: response.data.resposta
+          texto: mensagemEnviada,
+          resposta: response.data.data.responses
         });
 
-        this.mensagem = ""; // Limpa o input após o envio
       } catch (error) {
         console.error("Erro ao enviar mensagem:", error);
       }
@@ -55,4 +55,3 @@ export default {
   }
 };
 </script>
-
