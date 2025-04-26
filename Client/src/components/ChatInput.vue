@@ -6,7 +6,7 @@
       placeholder="Digite sua pergunta..."
       class="w-full bg-[#2b2b2b] h-[65px] placeholder:text-sm p-6 pr-14 text-sm text-white rounded-[15px] outline-none disabled:cursor-not-allowed"
       @keyup.enter="enviarMensagem"
-      :disabled="disabled || loading || !mensagem.trim()"
+      :disabled="disabled || loading"
     />
 
     <button
@@ -14,12 +14,7 @@
       class="absolute right-4 top-1/2 transform -translate-y-1/2 disabled:cursor-not-allowed"
       :disabled="disabled || loading || !mensagem.trim()"
     >
-      <img
-        v-if="!loading"
-        src="@/assets/input/SendButton.svg"
-        alt="Enviar"
-        class="w-6 h-6"
-      />
+      <img v-if="!loading" src="@/assets/input/SendButton.svg" alt="Enviar" class="w-6 h-6" />
       <div v-else class="loading-spinner w-6 h-6"></div>
     </button>
   </div>
@@ -35,11 +30,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    loading: Boolean,
   },
   data() {
     return {
       mensagem: '',
-      loading: false,
     }
   },
   methods: {
@@ -48,7 +43,7 @@ export default {
 
       const mensagemEnviada = this.mensagem
       this.mensagem = ''
-      this.loading = true
+      this.$emit('iniciarLoading')
 
       try {
         const response = await axios.post('http://localhost:8000/chat', {
@@ -64,7 +59,7 @@ export default {
         console.error('Erro ao enviar mensagem:', error)
         this.$emit('erroEnvio')
       } finally {
-        this.loading = false
+        this.$emit('pararLoading')
       }
     },
   },
@@ -82,8 +77,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .disabled\:cursor-not-allowed:disabled {

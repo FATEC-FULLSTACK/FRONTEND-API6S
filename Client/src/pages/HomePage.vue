@@ -23,7 +23,6 @@
       <div v-if="loadingGlobal" class="flex justify-center items-center my-8">
         <div class="loading-animation">
           <div class="dot-flashing"></div>
-          <p class="text-[var(--text-second-color)] mt-4">Processando sua pergunta...</p>
         </div>
       </div>
 
@@ -31,7 +30,10 @@
         <ChatInput
           @novaMensagem="exibirRespostas"
           @erroEnvio="loadingGlobal = false"
+          @iniciarLoading="loadingGlobal = true"
+          @pararLoading="loadingGlobal = false"
           :disabled="loadingGlobal || respostaEnviada"
+          :loading="loadingGlobal"
         />
       </section>
     </main>
@@ -107,7 +109,7 @@ export default defineComponent({
       mostrarTypingText,
       loadingGlobal,
       handleLoading,
-      respostaEnviada
+      respostaEnviada,
     }
   },
 })

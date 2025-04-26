@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/pages/HomePage.vue'
-import Criterios from '@/pages/Criterios.vue'
 import AnswerPage from '@/views/AnswerPage.vue'
 import FirstAnswer from '@/views/FirstAnswer.vue'
 import SecondAnswer from '@/views/SecondAnswer.vue'
@@ -28,21 +27,6 @@ const router = createRouter({
       name: 'secondAnswer',
       component: SecondAnswer,
     },
-    {
-      path: '/avaliacao',
-      name: 'criterios',
-      component: Criterios,
-    },
-    {
-      path: '/Answer1',
-      name: 'answer1',
-      component: () => import ('@/views/Answer1.vue')
-    },
-    {
-      path: '/Answer2',
-      name: 'answer2',
-      component: () => import ('@/views/Answer2.vue')
-    }
   ],
 })
 
