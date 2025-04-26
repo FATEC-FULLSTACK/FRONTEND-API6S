@@ -1,25 +1,64 @@
 <script setup lang="ts">
 import ChatInput from '@/components/ChatInput.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAnswerStore } from '@/stores/answerStore'
+import RatingInputArea from '@/components/RatingInputArea.vue'
 
 const router = useRouter()
+const answerStore = useAnswerStore()
 
 const route = useRoute()
 const userQuestion = ref(route.query.question || 'User question not available')
 const openaiAnswer = ref(route.query.openai || '')
 const geminiAnswer = ref(route.query.gemini || '')
+
+// Dados para o feedback adicional
+const finalFeedback = ref({
+  rating: 0,
+  text: '',
+})
+
+const bothAnswered = computed(() => answerStore.bothAnswered())
+const submitFinalFeedback = async () => {
+  try {
+    // Obter o payload completo da store
+    const payload = answerStore.getPayload()
+
+    // Adicionar o feedback adicional ao payload
+    const fullPayload = {
+      ...payload,
+      feedback_adicional: {
+        rating: finalFeedback.value.rating,
+        comment: finalFeedback.value.text,
+      },
+    }
+
+    console.log('Enviando payload completo:', fullPayload)
+
+    // Aqui você faria a chamada para o backend
+    // await api.submitEvaluation(fullPayload)
+
+    // Limpar o store após envio (opcional)
+    answerStore.$reset()
+
+    alert('Avaliação enviada com sucesso!')
+  } catch (error) {
+    console.error('Erro ao enviar avaliação:', error)
+    alert('Erro ao enviar avaliação. Por favor, tente novamente.')
+  }
+}
 </script>
 
 <template>
-  <div class="grid place-content-center h-screen mt-[50px]">
-    <div class="mb-[25vh]">
+  <div class="grid place-content-center mt-[50px]">
+    <div class="mb-[20vh]">
       <Box class="mb-8 flex">
         <box class="p-[8px_16px_10px_16px] bg-[#313131] rounded-[50px] ml-auto">
           {{ userQuestion }}
         </box>
       </Box>
-      <main class="flex flex-col gap-8 sm:gap-4 md:gap-6">
+      <main class="flex flex-colgap-8 sm:gap-4 md:gap-6">
         <box class="flex gap-8 sm:flex-col md:flex-row">
           <section class="flex flex-col items-center gap-2.5">
             <Box
@@ -33,15 +72,27 @@ const geminiAnswer = ref(route.query.gemini || '')
                   },
                 })
               "
-              class="h-[350px] sm:w-[90%] md:w-[430px] bg-[#313131] border-1 border-transparent hover:border-[#A29D43] transition-all duration-500 cursor-pointer rounded-10 rounded-lg p-4 resize-none text-[#E0E0E0]"
+              class="h-[350px] sm:w-[90%] md:w-[430px] bg-[#313131] border-1 border-transparent transition-all duration-500 cursor-pointer rounded-10 rounded-lg p-4 resize-none text-[#E0E0E0]"
+              :class="{
+                'hover:border-[#4ADE80]': answerStore.firstAnswer,
+                'hover:border-[#A29D43]': !answerStore.firstAnswer,
+              }"
             >
               <div class="h-full overflow-hidden text-ellipsis line-clamp-[13] whitespace-pre-wrap">
                 {{ openaiAnswer }}
               </div>
             </Box>
 
-            <box class="px-2 self-start py-1 rounded-[5px] bg-[#a29d43] text-white">
-              <p class="text-[13px]">Pending Answer</p>
+            <box
+              class="px-2 self-start py-1 rounded-[5px]"
+              :class="{
+                'bg-[#0D6C1A]': answerStore.firstAnswer,
+                'bg-[#a29d43]': !answerStore.firstAnswer,
+              }"
+            >
+              <p class="text-[13px] text-white">
+                {{ answerStore.firstAnswer ? 'Respondido' : 'Resposta pendente' }}
+              </p>
             </box>
           </section>
 
@@ -57,24 +108,57 @@ const geminiAnswer = ref(route.query.gemini || '')
                   },
                 })
               "
-              class="h-[350px] sm:w-[90%] md:w-[430px] bg-[#313131] border-1 border-transparent hover:border-[#A29D43] transition-all duration-500 cursor-pointer rounded-10 rounded-lg p-4 resize-none text-[#E0E0E0]"
+              class="h-[350px] sm:w-[90%] md:w-[430px] bg-[#313131] border-1 border-transparent transition-all duration-500 cursor-pointer rounded-10 rounded-lg p-4 resize-none text-[#E0E0E0]"
+              :class="{
+                'hover:border-[#4ADE80]': answerStore.secondAnswer,
+                'hover:border-[#A29D43]': !answerStore.secondAnswer,
+              }"
             >
               <div class="h-full overflow-hidden text-ellipsis line-clamp-[13] whitespace-pre-wrap">
                 {{ geminiAnswer }}
               </div>
             </Box>
 
-            <box class="px-2 self-start py-1 rounded-[5px] bg-[#a29d43] text-white">
-              <p class="text-[13px]">Pending Answer</p>
+            <box
+              class="px-2 self-start py-1 rounded-[5px]"
+              :class="{
+                'bg-[#0D6C1A]': answerStore.secondAnswer,
+                'bg-[#a29d43]': !answerStore.secondAnswer,
+              }"
+            >
+              <p class="text-[13px] text-white">
+                {{ answerStore.secondAnswer ? 'Respondido' : 'Resposta Pendente' }}
+              </p>
             </box>
           </section>
         </box>
       </main>
+
+      <!-- se ambas forem respondidas ira aparecer essa mensagem -->
+      <div v-if="bothAnswered" class=" mt-[50px]">
+        <RatingInputArea
+          title="Feedback Adicional"
+          placeholder="Por favor, avalie a comparação geral entre as duas respostas..."
+          v-model:rating="finalFeedback.rating"
+          v-model:text="finalFeedback.text"
+        />
+
+        <button
+          @click="submitFinalFeedback"
+          class="bg-[#4ADE80]  text-[#313131] font-bold py-2 px-4 rounded-[10px] hover:bg-[#3a9e66] cursor-pointer transition-colors duration-300 mt-4"
+        >
+          Finalizar
+        </button>
+      </div>
     </div>
+
 
     <div class="flex flex-col gap-2 sm:gap-1 md:gap-2">
       <ChatInput />
-      <span class="self-center text-[12px] text-[#9A9A9A]">Esta IA pode apresentar respostas imprecisas. Considere verificar informações importantes</span>
+      <span class="self-center text-[12px] text-[#9A9A9A]"
+        >Esta IA pode apresentar respostas imprecisas. Considere verificar informações
+        importantes</span
+      >
     </div>
 
     <button

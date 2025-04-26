@@ -2,10 +2,12 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import RatingInputArea from '@/components/RatingInputArea.vue'
+import { useAnswerStore } from '@/stores/answerStore'
 
 const route = useRoute()
 const fullAnswer = ref('')
 const userQuestion = ref('')
+const answerStore = useAnswerStore()
 
 const ratings = ref({
   contexto: {
@@ -32,7 +34,14 @@ onMounted(() => {
 })
 
 const submitAnswer = () => {
-  console.log('Avaliações:', ratings.value)
+  answerStore.saveFirstAnswer({
+    resposta: fullAnswer.value,
+    pergunta: userQuestion.value,
+    avaliacao: ratings.value,
+  })
+
+  console.log('Resposta 1 salva:', answerStore.firstAnswer)
+  console.log('Store após salvar FirstAnswer:', JSON.parse(JSON.stringify(answerStore.$state)))
 }
 </script>
 
@@ -51,10 +60,13 @@ const submitAnswer = () => {
         </div>
       </div>
       <main class="flex flex-col gap-8 sm:gap-4 md:gap-6">
-        <section readonly class="h-auto text-[#E0E0E0] max-w-[800px] leading-[28px] whitespace-pre-wrap">
+        <section
+          readonly
+          class="h-auto text-[#E0E0E0] max-w-[800px] leading-[28px] whitespace-pre-wrap"
+        >
           {{ fullAnswer }}
         </section>
-        
+
         <section class="mt-[30px]">
           <RatingInputArea
             title="Coerência"

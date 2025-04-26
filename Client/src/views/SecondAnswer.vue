@@ -2,10 +2,12 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import RatingInputArea from '@/components/RatingInputArea.vue'
+import { useAnswerStore } from '@/stores/answerStore'
 
 const route = useRoute()
 const fullAnswer = ref('')
 const userQuestion = ref('')
+const answerStore = useAnswerStore()
 
 const ratings = ref({
   contexto: {
@@ -32,7 +34,13 @@ onMounted(() => {
 })
 
 const submitAnswer = () => {
-  console.log('Avaliações:', ratings.value)
+  answerStore.saveSecondAnswer({
+    resposta: fullAnswer.value,
+    pergunta: userQuestion.value,
+    avaliacao: ratings.value,
+  })
+
+  console.log('Resposta 2 salva:', answerStore.secondAnswer)
 }
 </script>
 
