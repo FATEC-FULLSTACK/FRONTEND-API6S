@@ -26,7 +26,7 @@
         </div>
       </div>
 
-      <section class="w-full mb-32 mt-6">
+      <section class="w-[50vw] self-center mb-32 mt-6">
         <ChatInput
           @novaMensagem="exibirRespostas"
           @erroEnvio="loadingGlobal = false"

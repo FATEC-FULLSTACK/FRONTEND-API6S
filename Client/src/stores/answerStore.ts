@@ -77,6 +77,15 @@ export const useAnswerStore = defineStore('answers', () => {
     }
   }
 
+  function $reset() {
+    firstAnswer.value = null
+    secondAnswer.value = null
+    feedbackFinal.value = {
+      feedback_usuario: '',
+      melhor_performance: ''
+    }
+  }
+
   return {
     firstAnswer,
     secondAnswer,
@@ -85,6 +94,7 @@ export const useAnswerStore = defineStore('answers', () => {
     saveSecondAnswer,
     saveFeedback,
     bothAnswered,
-    getPayload
+    getPayload,
+    $reset
   }
 })

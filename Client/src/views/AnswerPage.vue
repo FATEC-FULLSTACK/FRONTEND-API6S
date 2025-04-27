@@ -13,19 +13,29 @@ const userQuestion = ref(route.query.question || 'User question not available')
 const openaiAnswer = ref(route.query.openai || '')
 const geminiAnswer = ref(route.query.gemini || '')
 
-// Dados para o feedback adicional
 const finalFeedback = ref({
   rating: 0,
   text: '',
 })
 
+const novaConversa = () => {
+  answerStore.$patch({
+    firstAnswer: null,
+    secondAnswer: null,
+    feedbackFinal: {
+      feedback_usuario: '',
+      melhor_performance: '',
+    },
+  })
+
+  router.push('/')
+}
+
 const bothAnswered = computed(() => answerStore.bothAnswered())
 const submitFinalFeedback = async () => {
   try {
-    // Obter o payload completo da store
     const payload = answerStore.getPayload()
 
-    // Adicionar o feedback adicional ao payload
     const fullPayload = {
       ...payload,
       feedback_adicional: {
@@ -36,10 +46,6 @@ const submitFinalFeedback = async () => {
 
     console.log('Enviando payload completo:', fullPayload)
 
-    // Aqui você faria a chamada para o backend
-    // await api.submitEvaluation(fullPayload)
-
-    // Limpar o store após envio (opcional)
     answerStore.$reset()
 
     alert('Avaliação enviada com sucesso!')
@@ -135,7 +141,7 @@ const submitFinalFeedback = async () => {
       </main>
 
       <!-- se ambas forem respondidas ira aparecer essa mensagem -->
-      <div v-if="bothAnswered" class=" mt-[50px]">
+      <div v-if="bothAnswered" class="mt-[50px]">
         <RatingInputArea
           title="Feedback Adicional"
           placeholder="Por favor, avalie a comparação geral entre as duas respostas..."
@@ -145,13 +151,12 @@ const submitFinalFeedback = async () => {
 
         <button
           @click="submitFinalFeedback"
-          class="bg-[#4ADE80]  text-[#313131] font-bold py-2 px-4 rounded-[10px] hover:bg-[#3a9e66] cursor-pointer transition-colors duration-300 mt-4"
+          class="bg-[#4ADE80] text-[#313131] font-bold py-2 px-4 rounded-[10px] hover:bg-[#3a9e66] cursor-pointer transition-colors duration-300 mt-4"
         >
           Finalizar
         </button>
       </div>
     </div>
-
 
     <div class="flex flex-col gap-2 sm:gap-1 md:gap-2">
       <ChatInput />
@@ -162,7 +167,7 @@ const submitFinalFeedback = async () => {
     </div>
 
     <button
-      @click="router.push('/')"
+      @click="novaConversa"
       class="mx-auto bg-[#D9D9D9] text-[12px] mt-5 text-[#313131] font-medium py-2 px-6 rounded-[20px] cursor-pointer hover:bg-[#9A9A9A] transition-colors duration-300"
     >
       Nova Conversa
