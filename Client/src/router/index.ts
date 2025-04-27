@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/pages/HomePage.vue'
+import AnswerPage from '@/views/AnswerPage.vue'
+import FirstAnswer from '@/views/FirstAnswer.vue'
+import SecondAnswer from '@/views/SecondAnswer.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,20 +13,20 @@ const router = createRouter({
       component: HomePage,
     },
     {
-      path: '/avaliacao',
-      name: 'criterios',
-      component: Criterios,
+      path: '/AnswerPage',
+      name: 'answerPage',
+      component: AnswerPage,
     },
     {
-      path: '/Answer1',
-      name: 'answer1',
-      component: () => import ('@/views/Answer1.vue')
+      path: '/FirstAnswer',
+      name: 'firstAnswer',
+      component: FirstAnswer,
     },
     {
-      path: '/Answer2',
-      name: 'answer2',
-      component: () => import ('@/views/Answer2.vue')
-    }
+      path: '/SecondAnswer',
+      name: 'secondAnswer',
+      component: SecondAnswer,
+    },
   ],
 })
 
