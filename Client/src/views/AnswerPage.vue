@@ -22,6 +22,9 @@ const finalFeedback = ref({
   text: '',
 })
 
+const performanceRating = ref(0)
+const feedbackRating = ref(0)
+
 const novaConversa = () => {
   answerStore.$patch({
     firstAnswer: null,
@@ -57,6 +60,8 @@ const submitFinalFeedback = async () => {
     answerStore.$reset()
 
     alert('Avaliação enviada com sucesso!')
+
+    router.push('/')
   } catch (error) {
     console.error('Erro ao enviar avaliação:', error)
     alert('Erro ao enviar avaliação. Por favor, tente novamente.')
@@ -97,17 +102,28 @@ const submitFinalFeedback = async () => {
               </div>
             </Box>
 
-            <box
-              class="px-2 self-start py-1 rounded-[5px]"
-              :class="{
-                'bg-[#0D6C1A]': answerStore.firstAnswer,
-                'bg-[#a29d43]': !answerStore.firstAnswer,
-              }"
-            >
-              <p class="text-[13px] text-white">
-                {{ answerStore.firstAnswer ? 'Respondido' : 'Resposta pendente' }}
-              </p>
-            </box>
+            <div class="flex self-start gap-4">
+              <box
+                class="px-2 self-start py-1 rounded-[5px]"
+                :class="{
+                  'bg-[#0D6C1A]': answerStore.firstAnswer,
+                  'bg-[#a29d43]': !answerStore.firstAnswer,
+                }"
+              >
+                <p class="text-[13px] text-white">
+                  {{ answerStore.firstAnswer ? 'Respondido' : 'Resposta pendente' }}
+                </p>
+              </box>
+              <box
+                class="px-2 self-start py-1 border-1 rounded-[5px]"
+                :class="{
+                  'border-[#0D6C1A]': answerStore.firstAnswer,
+                  'border-[#a29d43]': !answerStore.firstAnswer,
+                }"
+              >
+                <p class="text-[13px] text-white">LLM 1</p>
+              </box>
+            </div>
           </section>
 
           <section class="flex flex-col items-center gap-2.5">
@@ -133,17 +149,28 @@ const submitFinalFeedback = async () => {
               </div>
             </Box>
 
-            <box
-              class="px-2 self-start py-1 rounded-[5px]"
-              :class="{
-                'bg-[#0D6C1A]': answerStore.secondAnswer,
-                'bg-[#a29d43]': !answerStore.secondAnswer,
-              }"
-            >
-              <p class="text-[13px] text-white">
-                {{ answerStore.secondAnswer ? 'Respondido' : 'Resposta Pendente' }}
-              </p>
-            </box>
+            <div class="flex self-start gap-4">
+              <box
+                class="px-2 self-start py-1 rounded-[5px]"
+                :class="{
+                  'bg-[#0D6C1A]': answerStore.secondAnswer,
+                  'bg-[#a29d43]': !answerStore.secondAnswer,
+                }"
+              >
+                <p class="text-[13px] text-white">
+                  {{ answerStore.secondAnswer ? 'Respondido' : 'Resposta Pendente' }}
+                </p>
+              </box>
+              <box
+                class="px-2 self-start py-1 border-1 rounded-[5px]"
+                :class="{
+                  'border-[#0D6C1A]': answerStore.secondAnswer,
+                  'border-[#a29d43]': !answerStore.secondAnswer,
+                }"
+              >
+                <p class="text-[13px] text-white">LLM 2</p>
+              </box>
+            </div>
           </section>
         </box>
       </main>
@@ -157,12 +184,29 @@ const submitFinalFeedback = async () => {
           v-model:rating="feedbackRating"
         />
 
-        <FeedbackInputArea
-          title="Qual obteve melhor desempenho?"
-          placeholder="O que você acha que poderia ter sido feito melhor?"
-          v-model:text="melhorPerformance"
-          v-model:rating="performanceRating"
-        />
+        <div class="mt-4 mb-4 cursor-pointer">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="w-[5px] h-[34px] bg-[#4ADE80]"></span>
+            <h2 class="text-[#D9D9D9] font-bold">Qual obteve melhor desempenho ?</h2>
+          </div>
+          <div class="relative w-full">
+            <select
+              id="melhorPerformance"
+              v-model="melhorPerformance"
+              class="bg-[#313131] rounded-[10px] text-[#E0E0E0] w-full outline-none border-transparent p-4 pr-10 border-1 focus:border-[#4ADE80] cursor-pointer appearance-none hover:border-[#4ADE80]"
+            >
+              <option disabled value="">Selecione uma opção</option>
+              <option value="openai">LLM 1</option>
+              <option value="gemini">LLM 2</option>
+            </select>
+
+            <div
+              class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#E0E0E0] text-xs"
+            >
+              ▼
+            </div>
+          </div>
+        </div>
 
         <button
           @click="submitFinalFeedback"
