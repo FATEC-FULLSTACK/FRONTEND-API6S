@@ -24,7 +24,15 @@ const ratings = ref({
     rating: 0,
     text: '',
   },
+  veracidade: {
+    rating: 0,
+    text: '',
+  },
   relevancia: {
+    rating: 0,
+    text: '',
+  },
+  idioma: {
     rating: 0,
     text: '',
   },
@@ -59,7 +67,7 @@ const submitAnswer = async () => {
 
 <template>
   <div class="grid place-content-center">
-    <div class="mb-[25vh] mt-[150px] mx-[300px]">
+    <div class="mb-[25vh] mt-[150px] min-w-[500px] max-w-[800px]">
       <button
         class="bg-transparent w-auto border-1 border-[#D9D9D9] text-[#D9D9D9] font-bold py-2 px-4 rounded-[10px] hover:border-[#4ADE80] hover:text-[#4ADE80] cursor-pointer transition-colors duration-300 mt-4"
         @click="$router.go(-1)"
@@ -102,10 +110,23 @@ const submitAnswer = async () => {
           />
 
           <RatingInputArea
+            title="Veracidade"
+            placeholder="Comente sobre a veracidade..."
+            v-model:rating="ratings.veracidade.rating"
+            v-model:text="ratings.veracidade.text"
+          />
+
+          <RatingInputArea
             title="Relevância"
             placeholder="Comente sobre a relevância..."
             v-model:rating="ratings.relevancia.rating"
             v-model:text="ratings.relevancia.text"
+          />
+          <RatingInputArea
+            title="Idioma"
+            placeholder="Comente sobre o idioma..."
+            v-model:rating="ratings.idioma.rating"
+            v-model:text="ratings.idioma.text"
           />
         </section>
       </main>

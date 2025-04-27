@@ -14,6 +14,8 @@ interface AnswerData {
     precisao: Rating
     clareza: Rating
     relevancia: Rating
+    veracidade: Rating
+    idioma: Rating
   }
 }
 
@@ -21,11 +23,11 @@ export const useAnswerStore = defineStore('answers', () => {
   // Dados das respostas
   const firstAnswer = ref<AnswerData | null>(null)
   const secondAnswer = ref<AnswerData | null>(null)
-  
+
   // Dados adicionais (feedback final)
   const feedbackFinal = ref({
     feedback_usuario: '',
-    melhor_performance: ''
+    melhor_performance: '',
   })
 
   // Métodos para salvar respostas
@@ -41,7 +43,7 @@ export const useAnswerStore = defineStore('answers', () => {
   const saveFeedback = (feedback: string, performance: string) => {
     feedbackFinal.value = {
       feedback_usuario: feedback,
-      melhor_performance: performance
+      melhor_performance: performance,
     }
   }
 
@@ -51,29 +53,50 @@ export const useAnswerStore = defineStore('answers', () => {
   // Gera o payload completo
   const getPayload = () => {
     if (!bothAnswered()) throw new Error('Ambas as respostas devem ser completadas')
-    
+
+    const formatEvaluation = (evaluation: AnswerData['avaliacao']) => {
+      return {
+        coerencia: {
+          rating: evaluation.contexto.rating,
+          text: evaluation.contexto.text || '', 
+        },
+        respeito: {
+          rating: evaluation.precisao.rating,
+          text: evaluation.precisao.text || '', 
+        },
+        acuracia: {
+          rating: evaluation.clareza.rating,
+          text: evaluation.clareza.text || '', 
+        },
+        relevancia: {
+          rating: evaluation.relevancia.rating,
+          text: evaluation.relevancia.text || '', 
+        },
+        veracidade: {
+          rating: evaluation.veracidade.rating,
+          text: evaluation.veracidade.text || '', 
+        },
+        idioma: {
+          rating: evaluation.idioma.rating,
+          text: evaluation.idioma.text || '', 
+        },
+      }
+    }
+
     return {
-      llm1: "model-1",
-      llm2: "model-2",
-      endereco_ip_user: "", // Você pode adicionar isso depois
+      llm1: 'openai',
+      llm2: 'gemini',
+      endereco_ip_user: '127.0.0.1',
       pergunta: firstAnswer.value?.pergunta || '',
       resposta_llm1: firstAnswer.value?.resposta || '',
       resposta_llm2: secondAnswer.value?.resposta || '',
-      avaliacao_llm1: {
-        coerencia: firstAnswer.value?.avaliacao.contexto.rating || 0,
-        respeito: firstAnswer.value?.avaliacao.precisao.rating || 0,
-        acuracia: firstAnswer.value?.avaliacao.clareza.rating || 0,
-        relevancia: firstAnswer.value?.avaliacao.relevancia.rating || 0,
-        veracidade: 0 // Adicione se necessário
-      },
-      avaliacao_llm2: {
-        coerencia: secondAnswer.value?.avaliacao.contexto.rating || 0,
-        respeito: secondAnswer.value?.avaliacao.precisao.rating || 0,
-        acuracia: secondAnswer.value?.avaliacao.clareza.rating || 0,
-        relevancia: secondAnswer.value?.avaliacao.relevancia.rating || 0,
-        veracidade: 0 // Adicione se necessário
-      },
-      ...feedbackFinal.value
+      avaliacao_llm1: formatEvaluation(
+        firstAnswer.value?.avaliacao || ({} as AnswerData['avaliacao']),
+      ),
+      avaliacao_llm2: formatEvaluation(
+        secondAnswer.value?.avaliacao || ({} as AnswerData['avaliacao']),
+      ),
+      ...feedbackFinal.value,
     }
   }
 
@@ -82,7 +105,7 @@ export const useAnswerStore = defineStore('answers', () => {
     secondAnswer.value = null
     feedbackFinal.value = {
       feedback_usuario: '',
-      melhor_performance: ''
+      melhor_performance: '',
     }
   }
 
@@ -95,6 +118,6 @@ export const useAnswerStore = defineStore('answers', () => {
     saveFeedback,
     bothAnswered,
     getPayload,
-    $reset
+    $reset,
   }
 })

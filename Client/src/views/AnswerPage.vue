@@ -4,6 +4,8 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAnswerStore } from '@/stores/answerStore'
 import RatingInputArea from '@/components/RatingInputArea.vue'
+import FeedbackInputArea from '@/components/FeedbackInputArea.vue'
+import axios from 'axios'
 
 const router = useRouter()
 const answerStore = useAnswerStore()
@@ -12,6 +14,8 @@ const route = useRoute()
 const userQuestion = ref(route.query.question || 'User question not available')
 const openaiAnswer = ref(route.query.openai || '')
 const geminiAnswer = ref(route.query.gemini || '')
+const feedbackUsuario = ref('')
+const melhorPerformance = ref('')
 
 const finalFeedback = ref({
   rating: 0,
@@ -38,13 +42,17 @@ const submitFinalFeedback = async () => {
 
     const fullPayload = {
       ...payload,
-      feedback_adicional: {
-        rating: finalFeedback.value.rating,
-        comment: finalFeedback.value.text,
-      },
+      feedback_usuario: feedbackUsuario.value,
+      melhor_performance: melhorPerformance.value,
     }
 
     console.log('Enviando payload completo:', fullPayload)
+
+    const response = await axios.post('http://localhost:8000/avaliacao', fullPayload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
     answerStore.$reset()
 
@@ -142,11 +150,18 @@ const submitFinalFeedback = async () => {
 
       <!-- se ambas forem respondidas ira aparecer essa mensagem -->
       <div v-if="bothAnswered" class="mt-[50px]">
-        <RatingInputArea
-          title="Feedback Adicional"
-          placeholder="Por favor, avalie a comparação geral entre as duas respostas..."
-          v-model:rating="finalFeedback.rating"
-          v-model:text="finalFeedback.text"
+        <FeedbackInputArea
+          title="Feedback do Usuário"
+          placeholder="Por favor, escreva seu feedback..."
+          v-model:text="feedbackUsuario"
+          v-model:rating="feedbackRating"
+        />
+
+        <FeedbackInputArea
+          title="Melhor Performance"
+          placeholder="O que você acha que poderia ter sido feito melhor?"
+          v-model:text="melhorPerformance"
+          v-model:rating="performanceRating"
         />
 
         <button
