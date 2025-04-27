@@ -8,6 +8,8 @@ const route = useRoute()
 const fullAnswer = ref('')
 const userQuestion = ref('')
 const answerStore = useAnswerStore()
+const isSaving = ref(false)
+const showSuccess = ref(false)
 
 const ratings = ref({
   contexto: {
@@ -33,15 +35,25 @@ onMounted(() => {
   userQuestion.value = route.query.question?.toString() || 'Pergunta não disponível'
 })
 
-const submitAnswer = () => {
-  answerStore.saveFirstAnswer({
-    resposta: fullAnswer.value,
-    pergunta: userQuestion.value,
-    avaliacao: ratings.value,
-  })
+const submitAnswer = async () => {
+  try {
+    isSaving.value = true
 
-  console.log('Resposta 1 salva:', answerStore.firstAnswer)
-  console.log('Store após salvar FirstAnswer:', JSON.parse(JSON.stringify(answerStore.$state)))
+    await answerStore.saveFirstAnswer({
+      resposta: fullAnswer.value,
+      pergunta: userQuestion.value,
+      avaliacao: ratings.value,
+    })
+
+    showSuccess.value = true
+    setTimeout(() => (showSuccess.value = false), 3000) // Esconde após 3 segundos
+
+    console.log('Resposta salva:', answerStore.firstAnswer)
+  } catch (error) {
+    console.error('Erro ao salvar:', error)
+  } finally {
+    isSaving.value = false
+  }
 }
 </script>
 
@@ -97,12 +109,50 @@ const submitAnswer = () => {
           />
         </section>
       </main>
-      <button
-        class="bg-[#4ADE80] w-auto text-[#313131] font-bold py-2 px-4 rounded-[10px] hover:bg-[#3a9e66] cursor-pointer transition-colors duration-300 mt-4"
-        @click="submitAnswer"
-      >
-        Salvar
-      </button>
+      <div>
+        <button
+          class="cursor-pointer font-bold py-2 px-4 rounded-[10px] transition-all duration-300 mt-4"
+          @click="submitAnswer"
+          :class="{
+            'text-[#4ADE80] bg-transparent': answerStore.firstAnswer,
+            'bg-[#4ADE80] hover:bg-[#3a9e66] text-[#313131]': !answerStore.firstAnswer,
+            'opacity-75 cursor-not-allowed': isSaving,
+          }"
+          :disabled="isSaving"
+        >
+          <span v-if="isSaving" class="flex items-center">
+            <svg
+              class="animate-spin -ml-1 mr-2 h-4 w-4 text-current"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Salvando...
+          </span>
+          <span v-else>
+            {{ answerStore.firstAnswer ? '✅  Resposta salva' : 'Salvar resposta' }}
+          </span>
+        </button>
+        <transition name="fade">
+          <div v-if="showSuccess && !answerStore.firstAnswer">
+            Sua resposta foi salva com sucesso!
+          </div>
+        </transition>
+      </div>
     </div>
   </div>
 </template>
