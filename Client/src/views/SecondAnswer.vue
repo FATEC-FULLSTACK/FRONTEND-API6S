@@ -90,41 +90,41 @@ const submitAnswer = async () => {
         <section class="mt-[30px]">
           <RatingInputArea
             title="Coerência"
-            placeholder="Comente sobre o contexto..."
+            placeholder="A resposta é bem estruturada e coerente com si mesma?"
             v-model:rating="ratings.contexto.rating"
             v-model:text="ratings.contexto.text"
           />
 
           <RatingInputArea
             title="Respeito"
-            placeholder="Comente sobre a precisão..."
+            placeholder="A resposta foi ofensiva ou agressiva?"
             v-model:rating="ratings.precisao.rating"
             v-model:text="ratings.precisao.text"
           />
 
           <RatingInputArea
             title="Acurácia"
-            placeholder="Comente sobre a clareza..."
+            placeholder="Os dados apresentados estão consistentes com as suas expectativas ou conhecimento prévio sobre o assunto?"
             v-model:rating="ratings.clareza.rating"
             v-model:text="ratings.clareza.text"
           />
 
           <RatingInputArea
             title="Veracidade"
-            placeholder="Comente sobre a veracidade..."
+            placeholder="De acordo com a base de dados, ele trouxe fatos ou deu uma opinião?"
             v-model:rating="ratings.veracidade.rating"
             v-model:text="ratings.veracidade.text"
           />
 
           <RatingInputArea
             title="Relevância"
-            placeholder="Comente sobre a relevância..."
+            placeholder="A LLM respondeu o que perguntou?"
             v-model:rating="ratings.relevancia.rating"
             v-model:text="ratings.relevancia.text"
           />
           <RatingInputArea
             title="Idioma"
-            placeholder="Comente sobre o idioma..."
+            placeholder="A resposta foi gerada no idioma correto?"
             v-model:rating="ratings.idioma.rating"
             v-model:text="ratings.idioma.text"
           />
