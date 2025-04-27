@@ -151,14 +151,14 @@ const submitFinalFeedback = async () => {
       <!-- se ambas forem respondidas ira aparecer essa mensagem -->
       <div v-if="bothAnswered" class="mt-[50px]">
         <FeedbackInputArea
-          title="Feedback do Usuário"
+          title="Nos Conte o que achou"
           placeholder="Por favor, escreva seu feedback..."
           v-model:text="feedbackUsuario"
           v-model:rating="feedbackRating"
         />
 
         <FeedbackInputArea
-          title="Melhor Performance"
+          title="Qual obteve melhor desempenho?"
           placeholder="O que você acha que poderia ter sido feito melhor?"
           v-model:text="melhorPerformance"
           v-model:rating="performanceRating"
