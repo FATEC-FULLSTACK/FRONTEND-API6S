@@ -6,6 +6,8 @@ import { useAnswerStore } from '@/stores/answerStore'
 import RatingInputArea from '@/components/RatingInputArea.vue'
 import FeedbackInputArea from '@/components/FeedbackInputArea.vue'
 import axios from 'axios'
+import 'vue3-toastify/dist/index.css'
+import { toast } from 'vue3-toastify'
 
 const router = useRouter()
 const answerStore = useAnswerStore()
@@ -16,6 +18,7 @@ const openaiAnswer = ref(route.query.openai || '')
 const geminiAnswer = ref(route.query.gemini || '')
 const feedbackUsuario = ref('')
 const melhorPerformance = ref('')
+const isLoading = ref(false)
 
 const finalFeedback = ref({
   rating: 0,
@@ -41,6 +44,7 @@ const novaConversa = () => {
 const bothAnswered = computed(() => answerStore.bothAnswered())
 const submitFinalFeedback = async () => {
   try {
+    isLoading.value = true
     const payload = answerStore.getPayload()
 
     const fullPayload = {
@@ -57,14 +61,42 @@ const submitFinalFeedback = async () => {
       },
     })
 
-    answerStore.$reset()
+    toast.success('Avaliação enviada com sucesso!', {
+      theme: 'dark',
+      style: {
+        color: '#4ADE80',
+        borderRadius: '8px',
+      },
+      icon: '🟢',
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      progress: undefined,
+    })
 
-    alert('Avaliação enviada com sucesso!')
-
-    router.push('/')
+    setTimeout(() => {
+      router.push('/')
+    }, 5000)
+    
   } catch (error) {
     console.error('Erro ao enviar avaliação:', error)
-    alert('Erro ao enviar avaliação. Por favor, tente novamente.')
+    toast.error('Erro ao enviar avaliação. Tente novamente.', {
+      theme: 'dark',
+      style: {
+        color: '#FFBEBE',
+        borderRadius: '8px',
+      },
+      autoClose: 5000,
+      position: 'top-right',
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      progress: undefined,
+    })
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
@@ -184,7 +216,7 @@ const submitFinalFeedback = async () => {
           v-model:rating="feedbackRating"
         />
 
-        <div class="mt-4 mb-4 cursor-pointer">
+        <div class="mt-4 mb-12 cursor-pointer">
           <div class="flex items-center gap-2 mb-4">
             <span class="w-[5px] h-[34px] bg-[#4ADE80]"></span>
             <h2 class="text-[#D9D9D9] font-bold">Qual obteve melhor desempenho ?</h2>
@@ -210,9 +242,33 @@ const submitFinalFeedback = async () => {
 
         <button
           @click="submitFinalFeedback"
-          class="bg-[#4ADE80] text-[#313131] font-bold py-2 px-4 rounded-[10px] hover:bg-[#3a9e66] cursor-pointer transition-colors duration-300 mt-4"
+          :disabled="isLoading"
+          class="bg-[#4ADE80] text-[#313131] font-bold py-2 px-4 rounded-[10px] hover:bg-[#3a9e66] cursor-pointer transition-colors duration-300 mt-4 flex items-center justify-center gap-2"
+          :class="{ 'opacity-70 cursor-not-allowed': isLoading }"
         >
-          Finalizar
+          <span v-if="!isLoading">Finalizar</span>
+          <span v-else class="flex items-center gap-2">
+            <svg
+              class="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </span>
         </button>
       </div>
     </div>
