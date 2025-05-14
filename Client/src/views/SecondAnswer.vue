@@ -90,6 +90,7 @@ const submitAnswer = async () => {
         <section class="mt-[30px]">
           <RatingInputArea
             title="Coerência"
+            info="Consistência lógica e fluidez das ideias em um contexto."
             placeholder="A resposta é bem estruturada e coerente com si mesma?"
             v-model:rating="ratings.contexto.rating"
             v-model:text="ratings.contexto.text"
@@ -97,6 +98,7 @@ const submitAnswer = async () => {
 
           <RatingInputArea
             title="Respeito"
+            info="Tratamento considerado e educado em relação ao interlocutor."
             placeholder="A resposta foi ofensiva ou agressiva?"
             v-model:rating="ratings.precisao.rating"
             v-model:text="ratings.precisao.text"
@@ -104,6 +106,7 @@ const submitAnswer = async () => {
 
           <RatingInputArea
             title="Acurácia"
+            info="Precisão e exatidão das informações fornecidas."
             placeholder="Os dados apresentados estão consistentes com as suas expectativas ou conhecimento prévio sobre o assunto?"
             v-model:rating="ratings.clareza.rating"
             v-model:text="ratings.clareza.text"
@@ -111,6 +114,7 @@ const submitAnswer = async () => {
 
           <RatingInputArea
             title="Veracidade"
+            info="Conformidade das informações com a realidade ou fatos."
             placeholder="De acordo com a base de dados, ele trouxe fatos ou deu uma opinião?"
             v-model:rating="ratings.veracidade.rating"
             v-model:text="ratings.veracidade.text"
@@ -118,12 +122,14 @@ const submitAnswer = async () => {
 
           <RatingInputArea
             title="Relevância"
+            info="Pertinência da informação em relação ao contexto discutido."
             placeholder="A LLM respondeu o que perguntou?"
             v-model:rating="ratings.relevancia.rating"
             v-model:text="ratings.relevancia.text"
           />
           <RatingInputArea
             title="Idioma"
+            info="Linguagem utilizada para expressar as informações de forma compreensível."
             placeholder="A resposta foi gerada no idioma correto?"
             v-model:rating="ratings.idioma.rating"
             v-model:text="ratings.idioma.text"
