@@ -129,7 +129,7 @@ const submitFinalFeedback = async () => {
                 'hover:border-[#A29D43]': !answerStore.firstAnswer,
               }"
             >
-              <div class="h-full overflow-hidden text-ellipsis line-clamp-[13] whitespace-pre-wrap">
+              <div class="h-full overflow-y-auto text-ellipsis line-clamp-[13] whitespace-pre-wrap">
                 {{ openaiAnswer }}
               </div>
             </Box>
@@ -176,7 +176,7 @@ const submitFinalFeedback = async () => {
                 'hover:border-[#A29D43]': !answerStore.secondAnswer,
               }"
             >
-              <div class="h-full overflow-hidden text-ellipsis line-clamp-[13] whitespace-pre-wrap">
+              <div class="h-full overflow-y-auto text-ellipsis line-clamp-[13] whitespace-pre-wrap">
                 {{ geminiAnswer }}
               </div>
             </Box>
