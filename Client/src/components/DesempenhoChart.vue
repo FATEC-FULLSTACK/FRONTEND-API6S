@@ -75,15 +75,9 @@ async function fetchDesempenho() {
     
     dados.value = ordenado
 
-    console.log('Dados recebidos:', dados.value)
-
     const labels = dados.value.map(item => item.nome_llm)
     const participacao = dados.value.map(item => item.total_participacao)
     const desempenho = dados.value.map(item => item.total_melhor_performance)
-
-    console.log('Labels:', labels)
-    console.log('Participações:', participacao)
-    console.log('Desempenhos:', desempenho)
 
     chartData.value = {
         labels,
