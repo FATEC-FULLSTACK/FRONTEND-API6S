@@ -16,8 +16,13 @@ const answerStore = useAnswerStore()
 
 const route = useRoute()
 const userQuestion = ref(route.query.question || 'User question not available')
-const openaiAnswer = ref(route.query.openai || '')
-const geminiAnswer = ref(route.query.gemini || '')
+
+const llm1 = ref(answerStore.llm1)
+const llm2 = ref(answerStore.llm2)
+
+const respostaLlm1 = ref(route.query[answerStore.llm1])
+const respostaLlm2 = ref(route.query[answerStore.llm2])
+
 const feedbackUsuario = ref('')
 const melhorPerformance = ref('')
 const isLoading = ref(false)
@@ -124,7 +129,7 @@ const submitFinalFeedback = async () => {
                 router.push({
                   path: '/firstAnswer',
                   query: {
-                    answer: openaiAnswer,
+                    answer: respostaLlm1,
                     question: userQuestion,
                   },
                 })
@@ -138,7 +143,7 @@ const submitFinalFeedback = async () => {
               <div
                 class="h-full overflow-y-auto [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-400/50 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(156,163,175,0.5)_transparent] text-ellipsis line-clamp-[13] whitespace-pre-wrap bg-transparent"
               >
-                {{ openaiAnswer }}
+                {{ respostaLlm1 }}
               </div>
             </Box>
 
@@ -173,7 +178,7 @@ const submitFinalFeedback = async () => {
                 router.push({
                   path: '/secondAnswer',
                   query: {
-                    answer: geminiAnswer,
+                    answer: respostaLlm2,
                     question: userQuestion,
                   },
                 })
@@ -185,7 +190,7 @@ const submitFinalFeedback = async () => {
               }"
             >
               <div class="h-full overflow-y-auto text-ellipsis line-clamp-[13] whitespace-pre-wrap">
-                {{ geminiAnswer }}
+                {{ respostaLlm2 }}
               </div>
             </Box>
 
@@ -236,8 +241,8 @@ const submitFinalFeedback = async () => {
               class="bg-[#313131] rounded-[10px] text-[#E0E0E0] w-full outline-none border-transparent p-4 pr-10 border-1 focus:border-[#4ADE80] cursor-pointer appearance-none hover:border-[#4ADE80]"
             >
               <option disabled value="">Selecione uma opção</option>
-              <option value="openai">LLM 1</option>
-              <option value="gemini">LLM 2</option>
+              <option :value="llm1">LLM 1</option>
+              <option :value="llm2">LLM 2</option>
             </select>
 
             <div

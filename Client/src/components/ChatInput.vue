@@ -21,10 +21,21 @@
 </template>
 
 <script lang="ts">
-import { useLlmStore } from '@/stores/useLlmstore'
-import axios from 'axios'
+import { defineComponent } from 'vue';
+import { useLlmStore } from '@/stores/useLlmstore';
+import axios from 'axios';
+import { useAnswerStore } from '@/stores/answerStore';
 
-export default {
+interface Respostas {
+  [key: string]: string;
+}
+
+interface MensagemEnviada {
+  texto: string;
+  resposta: Respostas;
+}
+
+export default defineComponent({
   name: 'ChatInput',
   props: {
     disabled: {
@@ -33,69 +44,82 @@ export default {
     },
     loading: Boolean,
   },
+  emits: ['iniciarLoading', 'pararLoading', 'novaMensagem', 'erroEnvio'],
   data() {
     return {
       mensagem: '',
-    }
+    };
   },
   methods: {
+    selecionarRotasAleatorias(array: string[]): string[] {
+      const copiaArray = [...array];
+      const indice1 = Math.floor(Math.random() * copiaArray.length);
+      const item1 = copiaArray[indice1];
+      copiaArray.splice(indice1, 1);
+      const indice2 = Math.floor(Math.random() * copiaArray.length);
+      const item2 = copiaArray[indice2];
+      return [item1, item2];
+    },
+
     async enviarMensagem() {
-      if (!this.mensagem.trim() || this.disabled || this.loading) return
+      if (!this.mensagem.trim() || this.disabled || this.loading) return;
 
-      const uselLmAnswers = useLlmStore()
+      const uselLmAnswers = useLlmStore();
+      const answerStore = useAnswerStore();
 
-      const mensagemEnviada = this.mensagem
-      this.mensagem = ''
-      this.$emit('iniciarLoading')
+      const mensagemEnviada = this.mensagem;
+      this.mensagem = '';
+      this.$emit('iniciarLoading');
 
-      const rotas = ['openai', 'gemini']
-      const selecionadas = rotas.sort(() => 0.5 - Math.random()).slice(0, 2)
-      const respostas: { [key: string]: string } = {}
+      const rotas = ['openai', 'gemini', 'groq', 'deepseek'];
+      const selecionadas = this.selecionarRotasAleatorias(rotas);
+      const respostas: Respostas = {};
 
       try {
         await Promise.all(
           selecionadas.map(async (modelo) => {
-            const response = await axios.post(`http://localhost:8000/chat/stream/${modelo}`, {
-              user_id: '123',
-              message: mensagemEnviada,
-            })
-
-            
-
-            const responseText = response.data
-
-            // Se a resposta for algo como 'data: { "model": ..., "response": ... }'
-            let jsonResponse = {}
             try {
-              const cleaned = responseText.replace(/^data:\s*/, '') // remove o prefixo "data: "
-              jsonResponse = JSON.parse(cleaned)
-            } catch (e) {
-              console.error(`Erro ao fazer parse da resposta de ${modelo}:`, e)
+              const response = await axios.post(`http://localhost:8000/chat/stream/${modelo}`, {
+                user_id: '123',
+                message: mensagemEnviada,
+              });
+
+              const responseText = response.data;
+              let jsonResponse = { response: '' };
+
+              try {
+                const cleaned = responseText.replace(/^data:\s*/, '');
+                jsonResponse = JSON.parse(cleaned);
+              } catch (e) {
+                console.error(`Erro ao fazer parse da resposta de ${modelo}:`, e);
+              }
+
+              respostas[modelo] = jsonResponse.response || '';
+              console.log(respostas);
+            } catch (error) {
+              console.error(`Erro ao enviar mensagem para ${modelo}:`, error);
+              respostas[modelo] = 'Erro ao obter resposta';
             }
+          })
+        );
 
-            respostas[modelo] = jsonResponse.response || ''
-            console.log(respostas)
-          }),
+        uselLmAnswers.setRespostas(respostas);
+        answerStore.saveLlm1(selecionadas[0]);
+        answerStore.saveLlm2(selecionadas[1]);
 
-
-        )
-
-        uselLmAnswers.setRespostas(respostas)
-
-        // Emitir uma única vez com todas as respostas
         this.$emit('novaMensagem', {
           texto: mensagemEnviada,
           resposta: respostas,
-        })
+        } as MensagemEnviada);
       } catch (error) {
-        console.error('Erro ao enviar mensagem:', error)
-        this.$emit('erroEnvio')
+        console.error('Erro ao enviar mensagem:', error);
+        this.$emit('erroEnvio');
       } finally {
-        this.$emit('pararLoading')
+        this.$emit('pararLoading');
       }
     },
   },
-}
+});
 </script>
 
 <style scoped>

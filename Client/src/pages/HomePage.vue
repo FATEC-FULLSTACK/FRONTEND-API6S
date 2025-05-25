@@ -66,7 +66,7 @@ export default defineComponent({
 
     const exibirRespostas = (dados: {
       texto: string
-      resposta: { openai: string; gemini: string }
+      resposta: { openai: string; gemini: string, groq: string, deepseek: string }
     }) => {
       respostas.value = dados.resposta
       respostaEnviada.value = true
@@ -81,6 +81,8 @@ export default defineComponent({
             question: dados.texto,
             openai: dados.resposta.openai,
             gemini: dados.resposta.gemini,
+            deepseek: dados.resposta.deepseek,
+            groq: dados.resposta.groq,
           },
         })
       }, 500)
