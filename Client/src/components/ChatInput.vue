@@ -21,6 +21,7 @@
 </template>
 
 <script lang="ts">
+import { useLlmStore } from '@/stores/useLlmstore'
 import axios from 'axios'
 
 export default {
@@ -39,15 +40,17 @@ export default {
   },
   methods: {
     async enviarMensagem() {
-      if (!this.mensagem.trim() || this.disabled || this.loading) return;
+      if (!this.mensagem.trim() || this.disabled || this.loading) return
 
-      const mensagemEnviada = this.mensagem;
-      this.mensagem = '';
-      this.$emit('iniciarLoading');
+      const uselLmAnswers = useLlmStore()
 
-      const rotas = ['openai', 'gemini', 'deepseek', 'groq', 'rag'];
-      const selecionadas = rotas.sort(() => 0.5 - Math.random()).slice(0, 2);
-      const respostas: { [key: string]: string } = {};
+      const mensagemEnviada = this.mensagem
+      this.mensagem = ''
+      this.$emit('iniciarLoading')
+
+      const rotas = ['openai', 'gemini', 'deepseek', 'groq', 'rag']
+      const selecionadas = rotas.sort(() => 0.5 - Math.random()).slice(0, 2)
+      const respostas: { [key: string]: string } = {}
 
       try {
         await Promise.all(
@@ -55,23 +58,40 @@ export default {
             const response = await axios.post(`http://localhost:8000/chat/stream/${modelo}`, {
               user_id: '123',
               message: mensagemEnviada,
-            });
+            })
 
-            respostas[modelo] = response.data.responses || response.data.data?.responses || '';
-          })
-        );
+            
+
+            const responseText = response.data
+
+            // Se a resposta for algo como 'data: { "model": ..., "response": ... }'
+            let jsonResponse = {}
+            try {
+              const cleaned = responseText.replace(/^data:\s*/, '') // remove o prefixo "data: "
+              jsonResponse = JSON.parse(cleaned)
+            } catch (e) {
+              console.error(`Erro ao fazer parse da resposta de ${modelo}:`, e)
+            }
+
+            respostas[modelo] = jsonResponse.response || ''
+            console.log(respostas)
+          }),
+
+
+        )
+
+        uselLmAnswers.setRespostas(respostas)
 
         // Emitir uma única vez com todas as respostas
         this.$emit('novaMensagem', {
           texto: mensagemEnviada,
           resposta: respostas,
-        });
-
+        })
       } catch (error) {
-        console.error('Erro ao enviar mensagem:', error);
-        this.$emit('erroEnvio');
+        console.error('Erro ao enviar mensagem:', error)
+        this.$emit('erroEnvio')
       } finally {
-        this.$emit('pararLoading');
+        this.$emit('pararLoading')
       }
     },
   },
