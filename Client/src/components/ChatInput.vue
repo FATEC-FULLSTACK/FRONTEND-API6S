@@ -48,7 +48,7 @@ export default {
       this.mensagem = ''
       this.$emit('iniciarLoading')
 
-      const rotas = ['openai', 'gemini', 'deepseek', 'groq', 'rag']
+      const rotas = ['openai', 'gemini']
       const selecionadas = rotas.sort(() => 0.5 - Math.random()).slice(0, 2)
       const respostas: { [key: string]: string } = {}
 
