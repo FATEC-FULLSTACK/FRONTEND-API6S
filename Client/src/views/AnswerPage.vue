@@ -86,7 +86,6 @@ const submitFinalFeedback = async () => {
     setTimeout(() => {
       router.push('/')
     }, 5000)
-    
   } catch (error) {
     console.error('Erro ao enviar avaliação:', error)
     toast.error('Erro ao enviar avaliação. Tente novamente.', {
@@ -136,7 +135,9 @@ const submitFinalFeedback = async () => {
                 'hover:border-[#A29D43]': !answerStore.firstAnswer,
               }"
             >
-              <div class="h-full overflow-y-auto text-ellipsis line-clamp-[13] whitespace-pre-wrap">
+              <div
+                class="h-full overflow-y-auto [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-400/50 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(156,163,175,0.5)_transparent] text-ellipsis line-clamp-[13] whitespace-pre-wrap bg-transparent"
+              >
                 {{ openaiAnswer }}
               </div>
             </Box>
@@ -251,43 +252,45 @@ const submitFinalFeedback = async () => {
               @click="mostrarGrafico = !mostrarGrafico"
               class="group flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:shadow-md hover:shadow-green-400/10 focus:outline-none focus:ring-2 focus:ring-green-400/50 transition-all duration-200 hover:scale-[1.04] active:scale-[0.98]"
             >
-              <ChartBarIcon class="w-5 h-5 text-green-400 group-hover:rotate-1 transition-transform" />
-              <span class="text-sm font-medium">Visualizar desempenho das LLMs</span>
+              <ChartBarIcon
+                class="w-5 h-5 text-green-400 group-hover:rotate-1 transition-transform"
+              />
+              <span class="text-sm font-medium cursor-pointer">Visualizar desempenho das LLMs</span>
             </button>
           </div>
           <DesempenhoChart v-if="mostrarGrafico" />
         </div>
 
-          <button
-            @click="submitFinalFeedback"
-            :disabled="isLoading"
-            class="bg-[#4ADE80] text-[#313131] font-bold py-2 px-4 rounded-[10px] hover:bg-[#3a9e66] cursor-pointer transition-colors duration-300 mt-4 flex items-center justify-center gap-2"
-            :class="{ 'opacity-70 cursor-not-allowed': isLoading }"
-          >
-            <span v-if="!isLoading">Finalizar</span>
-            <span v-else class="flex items-center gap-2">
-              <svg
-                class="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            </span>
-          </button>
+        <button
+          @click="submitFinalFeedback"
+          :disabled="isLoading"
+          class="bg-[#4ADE80] text-[#313131] font-bold py-2 px-4 rounded-[10px] hover:bg-[#3a9e66] cursor-pointer transition-colors duration-300 mt-4 flex items-center justify-center gap-2"
+          :class="{ 'opacity-70 cursor-not-allowed': isLoading }"
+        >
+          <span v-if="!isLoading">Finalizar</span>
+          <span v-else class="flex items-center gap-2">
+            <svg
+              class="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </span>
+        </button>
       </div>
     </div>
 

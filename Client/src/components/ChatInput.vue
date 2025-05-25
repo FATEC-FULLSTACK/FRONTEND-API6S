@@ -21,6 +21,7 @@
 </template>
 
 <script lang="ts">
+import { useLlmStore } from '@/stores/useLlmstore'
 import axios from 'axios'
 
 export default {
@@ -41,19 +42,50 @@ export default {
     async enviarMensagem() {
       if (!this.mensagem.trim() || this.disabled || this.loading) return
 
+      const uselLmAnswers = useLlmStore()
+
       const mensagemEnviada = this.mensagem
       this.mensagem = ''
       this.$emit('iniciarLoading')
 
-      try {
-        const response = await axios.post('http://localhost:8000/chat', {
-          user_id: '123',
-          message: mensagemEnviada,
-        })
+      const rotas = ['openai', 'gemini']
+      const selecionadas = rotas.sort(() => 0.5 - Math.random()).slice(0, 2)
+      const respostas: { [key: string]: string } = {}
 
+      try {
+        await Promise.all(
+          selecionadas.map(async (modelo) => {
+            const response = await axios.post(`http://localhost:8000/chat/stream/${modelo}`, {
+              user_id: '123',
+              message: mensagemEnviada,
+            })
+
+            
+
+            const responseText = response.data
+
+            // Se a resposta for algo como 'data: { "model": ..., "response": ... }'
+            let jsonResponse = {}
+            try {
+              const cleaned = responseText.replace(/^data:\s*/, '') // remove o prefixo "data: "
+              jsonResponse = JSON.parse(cleaned)
+            } catch (e) {
+              console.error(`Erro ao fazer parse da resposta de ${modelo}:`, e)
+            }
+
+            respostas[modelo] = jsonResponse.response || ''
+            console.log(respostas)
+          }),
+
+
+        )
+
+        uselLmAnswers.setRespostas(respostas)
+
+        // Emitir uma única vez com todas as respostas
         this.$emit('novaMensagem', {
           texto: mensagemEnviada,
-          resposta: response.data.data.responses,
+          resposta: respostas,
         })
       } catch (error) {
         console.error('Erro ao enviar mensagem:', error)
