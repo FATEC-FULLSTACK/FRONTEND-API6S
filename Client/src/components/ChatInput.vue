@@ -39,27 +39,39 @@ export default {
   },
   methods: {
     async enviarMensagem() {
-      if (!this.mensagem.trim() || this.disabled || this.loading) return
+      if (!this.mensagem.trim() || this.disabled || this.loading) return;
 
-      const mensagemEnviada = this.mensagem
-      this.mensagem = ''
-      this.$emit('iniciarLoading')
+      const mensagemEnviada = this.mensagem;
+      this.mensagem = '';
+      this.$emit('iniciarLoading');
+
+      const rotas = ['openai', 'gemini', 'deepseek', 'groq', 'rag'];
+      const selecionadas = rotas.sort(() => 0.5 - Math.random()).slice(0, 2);
+      const respostas: { [key: string]: string } = {};
 
       try {
-        const response = await axios.post('http://localhost:8000/chat', {
-          user_id: '123',
-          message: mensagemEnviada,
-        })
+        await Promise.all(
+          selecionadas.map(async (modelo) => {
+            const response = await axios.post(`http://localhost:8000/chat/stream/${modelo}`, {
+              user_id: '123',
+              message: mensagemEnviada,
+            });
 
+            respostas[modelo] = response.data.responses || response.data.data?.responses || '';
+          })
+        );
+
+        // Emitir uma única vez com todas as respostas
         this.$emit('novaMensagem', {
           texto: mensagemEnviada,
-          resposta: response.data.data.responses,
-        })
+          resposta: respostas,
+        });
+
       } catch (error) {
-        console.error('Erro ao enviar mensagem:', error)
-        this.$emit('erroEnvio')
+        console.error('Erro ao enviar mensagem:', error);
+        this.$emit('erroEnvio');
       } finally {
-        this.$emit('pararLoading')
+        this.$emit('pararLoading');
       }
     },
   },
