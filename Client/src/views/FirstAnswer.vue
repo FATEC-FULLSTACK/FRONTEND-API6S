@@ -74,6 +74,9 @@ const submitAnswer = async () => {
       >
         Voltar
       </button>
+      <span class="mb-8 mt-2 italic place-content-center flex">
+        Tempo estimado para avaliação é de 10 minutos
+      </span>
       <div class="mb-8 flex">
         <div class="p-[8px_16px_10px_16px] bg-[#313131] rounded-[50px] ml-auto">
           {{ userQuestion }}
@@ -179,6 +182,10 @@ const submitAnswer = async () => {
             Sua resposta foi salva com sucesso!
           </div>
         </transition>
+        <button class="bg-transparent ml-2 w-auto border-1 border-[#D9D9D9] text-[#D9D9D9] font-bold py-2 px-4 rounded-[10px] hover:border-[#4ADE80] hover:text-[#4ADE80] cursor-pointer transition-colors duration-300 mt-4"
+        @click="$router.go(-1)">
+          Voltar
+        </button>
       </div>
     </div>
   </div>
