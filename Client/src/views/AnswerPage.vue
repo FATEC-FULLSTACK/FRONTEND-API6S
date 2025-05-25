@@ -8,17 +8,25 @@ import FeedbackInputArea from '@/components/FeedbackInputArea.vue'
 import axios from 'axios'
 import 'vue3-toastify/dist/index.css'
 import { toast } from 'vue3-toastify'
+import DesempenhoChart from '@/components/DesempenhoChart.vue'
+import { ChartBarIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const answerStore = useAnswerStore()
 
 const route = useRoute()
 const userQuestion = ref(route.query.question || 'User question not available')
-const openaiAnswer = ref(route.query.openai || '')
-const geminiAnswer = ref(route.query.gemini || '')
+
+const llm1 = ref(answerStore.llm1)
+const llm2 = ref(answerStore.llm2)
+
+const respostaLlm1 = ref(route.query[answerStore.llm1])
+const respostaLlm2 = ref(route.query[answerStore.llm2])
+
 const feedbackUsuario = ref('')
 const melhorPerformance = ref('')
 const isLoading = ref(false)
+const mostrarGrafico = ref(false)
 
 const finalFeedback = ref({
   rating: 0,
@@ -39,6 +47,10 @@ const novaConversa = () => {
   })
 
   router.push('/')
+}
+
+function toggleGrafico() {
+  mostrarGrafico.value = !mostrarGrafico.value
 }
 
 const bothAnswered = computed(() => answerStore.bothAnswered())
@@ -79,7 +91,6 @@ const submitFinalFeedback = async () => {
     setTimeout(() => {
       router.push('/')
     }, 5000)
-    
   } catch (error) {
     console.error('Erro ao enviar avaliação:', error)
     toast.error('Erro ao enviar avaliação. Tente novamente.', {
@@ -118,7 +129,7 @@ const submitFinalFeedback = async () => {
                 router.push({
                   path: '/firstAnswer',
                   query: {
-                    answer: openaiAnswer,
+                    answer: respostaLlm1,
                     question: userQuestion,
                   },
                 })
@@ -129,8 +140,10 @@ const submitFinalFeedback = async () => {
                 'hover:border-[#A29D43]': !answerStore.firstAnswer,
               }"
             >
-              <div class="h-full overflow-hidden text-ellipsis line-clamp-[13] whitespace-pre-wrap">
-                {{ openaiAnswer }}
+              <div
+                class="h-full overflow-y-auto [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-400/50 [&::-webkit-scrollbar-thumb]:rounded-full [scrollbar-width:thin] [scrollbar-color:rgba(156,163,175,0.5)_transparent] text-ellipsis line-clamp-[13] whitespace-pre-wrap bg-transparent"
+              >
+                {{ respostaLlm1 }}
               </div>
             </Box>
 
@@ -165,7 +178,7 @@ const submitFinalFeedback = async () => {
                 router.push({
                   path: '/secondAnswer',
                   query: {
-                    answer: geminiAnswer,
+                    answer: respostaLlm2,
                     question: userQuestion,
                   },
                 })
@@ -176,8 +189,8 @@ const submitFinalFeedback = async () => {
                 'hover:border-[#A29D43]': !answerStore.secondAnswer,
               }"
             >
-              <div class="h-full overflow-hidden text-ellipsis line-clamp-[13] whitespace-pre-wrap">
-                {{ geminiAnswer }}
+              <div class="h-full overflow-y-auto text-ellipsis line-clamp-[13] whitespace-pre-wrap">
+                {{ respostaLlm2 }}
               </div>
             </Box>
 
@@ -228,8 +241,8 @@ const submitFinalFeedback = async () => {
               class="bg-[#313131] rounded-[10px] text-[#E0E0E0] w-full outline-none border-transparent p-4 pr-10 border-1 focus:border-[#4ADE80] cursor-pointer appearance-none hover:border-[#4ADE80]"
             >
               <option disabled value="">Selecione uma opção</option>
-              <option value="openai">LLM 1</option>
-              <option value="gemini">LLM 2</option>
+              <option :value="llm1">LLM 1</option>
+              <option :value="llm2">LLM 2</option>
             </select>
 
             <div
@@ -238,6 +251,19 @@ const submitFinalFeedback = async () => {
               ▼
             </div>
           </div>
+
+          <div class="flex items-center gap-4 mt-4">
+            <button
+              @click="mostrarGrafico = !mostrarGrafico"
+              class="group flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:shadow-md hover:shadow-green-400/10 focus:outline-none focus:ring-2 focus:ring-green-400/50 transition-all duration-200 hover:scale-[1.04] active:scale-[0.98]"
+            >
+              <ChartBarIcon
+                class="w-5 h-5 text-green-400 group-hover:rotate-1 transition-transform"
+              />
+              <span class="text-sm font-medium cursor-pointer">Visualizar desempenho das LLMs</span>
+            </button>
+          </div>
+          <DesempenhoChart v-if="mostrarGrafico" />
         </div>
 
         <button

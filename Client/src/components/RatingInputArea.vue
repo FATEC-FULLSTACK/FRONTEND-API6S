@@ -3,6 +3,14 @@
     <div class="flex items-center gap-2">
       <span class="w-[5px] h-[34px] bg-[#4ADE80]"></span>
       <h2 class="text-[#D9D9D9] font-bold">{{ title }}</h2>
+      <div class="group relative">
+        <span class="text-gray-400 hover:text-green-900 duration-300 cursor-pointer">ⓘ</span>
+        <div
+          class="absolute bg-green-900 left-0 mt-1 w-64 p-2 text-sm text-white bg-gray-800 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        >
+          {{ info }}
+        </div>
+      </div>
     </div>
 
     <textarea
@@ -39,6 +47,9 @@ const props = defineProps({
   text: {
     type: String,
     default: ''
+  },
+  info: {
+    type: String,
   }
 })
 

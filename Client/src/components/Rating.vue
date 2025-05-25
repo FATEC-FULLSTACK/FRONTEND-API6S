@@ -3,17 +3,14 @@
     <div v-for="i in 5" :key="i" class="flex flex-col items-center">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        fill="none"
         viewBox="0 0 24 24"
-        stroke="currentColor"
-        :class="{
-          'text-[#4ADE80]': modelValue >= i,
-          'text-[#D9D9D9]': modelValue < i
-        }"
+        :fill="modelValue >= i ? '#4ADE80' : 'none'"
+        :stroke="modelValue >= i ? '#15803D' : '#D9D9D9'"
+        stroke-width="2"
         class="w-4 h-4 cursor-pointer transition-all duration-200 hover:scale-110"
         @click="setRating(i)"
       >
-        <circle cx="12" cy="12" r="10" stroke-width="2" />
+        <circle cx="12" cy="12" r="10" />
       </svg>
       <span :class="{'text-[#4ADE80]': modelValue >= i, 'text-[#D9D9D9]': modelValue < i}" class="text-sm mt-1">
         {{ i }}

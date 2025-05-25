@@ -24,6 +24,9 @@ export const useAnswerStore = defineStore('answers', () => {
   const firstAnswer = ref<AnswerData | null>(null)
   const secondAnswer = ref<AnswerData | null>(null)
 
+  const llm1 = ref<string | null>(null)
+  const llm2 = ref<string | null>(null)
+
   // Dados adicionais (feedback final)
   const feedbackFinal = ref({
     feedback_usuario: '',
@@ -37,6 +40,14 @@ export const useAnswerStore = defineStore('answers', () => {
 
   const saveSecondAnswer = (data: AnswerData) => {
     secondAnswer.value = data
+  }
+
+  const saveLlm1 = (data : string) => {
+    llm1.value = data
+  }
+
+  const saveLlm2 = (data : string) => {
+    llm2.value = data
   }
 
   // Método para salvar feedback final
@@ -84,8 +95,8 @@ export const useAnswerStore = defineStore('answers', () => {
     }
 
     return {
-      llm1: 'openai',
-      llm2: 'gemini',
+      llm1: llm1.value,
+      llm2: llm2.value,
       endereco_ip_user: '127.0.0.1',
       pergunta: firstAnswer.value?.pergunta || '',
       resposta_llm1: firstAnswer.value?.resposta || '',
@@ -110,6 +121,10 @@ export const useAnswerStore = defineStore('answers', () => {
   }
 
   return {
+    llm1,
+    llm2,
+    saveLlm1,
+    saveLlm2,
     firstAnswer,
     secondAnswer,
     feedbackFinal,
