@@ -71,7 +71,7 @@ export default defineComponent({
       this.mensagem = '';
       this.$emit('iniciarLoading');
 
-      const rotas = ['openai', 'gemini', 'groq', 'deepseek'];
+      const rotas = ['openai', 'groq', 'deepseek'];
       const selecionadas = this.selecionarRotasAleatorias(rotas);
       const respostas: Respostas = {};
 

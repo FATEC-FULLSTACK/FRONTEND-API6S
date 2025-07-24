@@ -107,9 +107,17 @@ const submitFinalFeedback = async () => {
       progress: undefined,
     })
   } finally {
+    novaConversa()
     isLoading.value = false
   }
 }
+
+const CheckAnswer = () => {
+  if (respostaLlm1 == "" || respostaLlm2 == "" || !respostaLlm1 || !respostaLlm2) {
+    novaConversa()
+  }
+}
+
 </script>
 
 <template>
