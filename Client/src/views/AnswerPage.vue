@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ChatInput from '@/components/ChatInput.vue'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAnswerStore } from '@/stores/answerStore'
 import RatingInputArea from '@/components/RatingInputArea.vue'
@@ -89,7 +89,7 @@ const submitFinalFeedback = async () => {
     })
 
     setTimeout(() => {
-      router.push('/')
+    novaConversa()
     }, 5000)
   } catch (error) {
     console.error('Erro ao enviar avaliação:', error)
@@ -107,16 +107,20 @@ const submitFinalFeedback = async () => {
       progress: undefined,
     })
   } finally {
-    novaConversa()
     isLoading.value = false
   }
 }
 
 const CheckAnswer = () => {
-  if (respostaLlm1 == "" || respostaLlm2 == "" || !respostaLlm1 || !respostaLlm2) {
-    novaConversa()
+  console.log(respostaLlm1.value)
+  if (respostaLlm1.value == null || respostaLlm1.value == undefined || respostaLlm2 == undefined || respostaLlm2 == null) {
+      novaConversa()
   }
 }
+
+onMounted(() => {
+  CheckAnswer()
+})
 
 </script>
 
